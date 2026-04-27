@@ -11,7 +11,10 @@ def index():
         name  = request.form.get('name', '').strip()
         email = request.form.get('email', '').strip()
         event = request.form.get('event', '').strip()
-
+        phone = request.form.get('phone', '').strip()
+        
+        print("new feature added");
+        
         if not name or not email or not event:
             flash('All fields are required.', 'error')
         else:
