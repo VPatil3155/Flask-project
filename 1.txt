@@ -1,0 +1,1930 @@
+EXPERIMENT 1
+Continuous Integration using Jenkins
+Simple Event Registration App using Flask + HTML
+
+🎯 Experiment Objective
+Build a simple web application for:
+Event Registration 
+User enters: 
+Name 
+Email 
+Store details 
+Run app with: 
+Flask 
+Docker 
+Jenkins pipeline 
+This demonstrates:
+✅ Continuous Integration
+✅ Automated Build
+✅ Automated Deployment
+
+📁 Project Structure
+event_app/
+│── app.py
+│── templates/
+│    └── index.html
+│── requirements.txt
+│── Dockerfile
+│── Jenkinsfile
+
+🧩 STEP 1 — Flask Application
+📄 app.py
+from flask import Flask, render_template, request
+
+app = Flask(__name__)
+
+users = []
+
+@app.route('/')
+def home():
+    return render_template('index.html')
+
+@app.route('/register', methods=['POST'])
+def register():
+    name = request.form['name']
+    email = request.form['email']
+
+    users.append([name, email])
+
+    return "<h2>Registration Successful</h2><a href='/'>Go Back</a>"
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=5000)
+
+🔍 Line-by-Line Explanation
+
+from flask import Flask, render_template, request
+Imports:
+Flask
+Creates application
+render_template
+Loads HTML page
+request
+Gets form data from user
+
+app = Flask(__name__)
+Creates Flask app object
+app = Flask(__name__)
+Meaning:
+Flask starts web application 
+__name__ tells Python current file name 
+
+users = []
+Empty list to store registrations
+Example:
+[
+ ["Sarthak", "abc@gmail.com"],
+ ["Rahul", "xyz@gmail.com"]
+]
+
+@app.route('/')
+Home page URL
+When user opens:
+http://localhost:5000
+this page loads
+
+def home():
+Function for homepage
+
+return render_template('index.html')
+Shows HTML form page
+
+@app.route('/register', methods=['POST'])
+Creates register page
+Accepts only:
+POST
+Because form submits data
+
+name = request.form['name']
+Gets name from form
+
+email = request.form['email']
+Gets email from form
+
+users.append([name, email])
+Stores entered data
+
+return "<h2>Registration Successful</h2>"
+Shows success message
+
+app.run(host='0.0.0.0', port=5000)
+Runs app
+host='0.0.0.0'
+Allows Docker/Jenkins access
+port=5000
+App runs on port 5000
+
+🧩 STEP 2 — HTML Page
+📄 templates/index.html
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Event Registration</title>
+</head>
+<body>
+    <h1>Event Registration Form</h1>
+
+    <form action="/register" method="post">
+        Name:<br>
+        <input type="text" name="name"><br><br>
+
+        Email:<br>
+        <input type="email" name="email"><br><br>
+
+        <input type="submit" value="Register">
+    </form>
+</body>
+</html>
+
+🔍 Line-by-Line Explanation
+
+<form action="/register" method="post">
+Means:
+Send form data to /register 
+Use POST method 
+
+<input type="text" name="name">
+Textbox for name
+
+<input type="email" name="email">
+Textbox for email
+
+<input type="submit">
+Submit button
+
+🧩 STEP 3 — Requirements File
+📄 requirements.txt
+Flask
+
+🔍 Why Used?
+Tells Python:
+Install Flask package
+
+🧩 STEP 4 — Dockerfile
+📄 Dockerfile
+FROM python:3.10
+
+WORKDIR /app
+
+COPY . /app
+
+RUN pip install -r requirements.txt
+
+CMD ["python", "app.py"]
+
+🔍 Line-by-Line Explanation
+
+FROM python:3.10
+Uses Python image
+
+WORKDIR /app
+Sets working folder
+
+COPY . /app
+Copies all files
+
+RUN pip install -r requirements.txt
+Installs Flask
+
+CMD ["python", "app.py"]
+Runs application
+
+🧩 STEP 5 — Docker Commands
+
+Build Image
+docker build -t event-app .
+
+Explanation
+docker build
+Creates Docker image
+-t
+Tags image name
+event-app
+Image name
+.
+Current folder
+
+Run Container
+docker run -p 5000:5000 event-app
+
+Explanation
+docker run
+Runs container
+-p 5000:5000
+Maps ports
+computer:5000 → container:5000
+
+🧩 STEP 6 — Jenkins Pipeline
+📄 Jenkinsfile
+pipeline {
+    agent any
+
+    stages {
+        stage('Build') {
+            steps {
+                sh 'docker build -t event-app .'
+            }
+        }
+
+        stage('Run') {
+            steps {
+                sh 'docker run -d -p 5000:5000 event-app'
+            }
+        }
+    }
+}
+
+🔍 Line-by-Line Explanation
+
+pipeline
+Creates Jenkins pipeline
+
+agent any
+Use any Jenkins machine
+
+stage('Build')
+Build Docker image
+
+sh
+Runs shell command
+
+stage('Run')
+Runs container
+
+🧩 Commands Used in Practical
+
+Install Flask
+pip install flask
+What it does:
+Installs Flask framework
+
+Run Python app
+python app.py
+Starts Flask app
+
+Build Docker
+docker build -t event-app .
+Creates image
+
+Run Docker
+docker run -p 5000:5000 event-app
+Runs container
+
+🎯 Continuous Integration Flow
+Developer → GitHub → Jenkins → Build → Test → Deploy
+
+🎓 Viva Questions
+
+Q1 What is Continuous Integration?
+Continuous Integration means:
+Automatically building code whenever developer updates code.
+
+Q2 Why Jenkins?
+Jenkins automates:
+build 
+testing 
+deployment 
+
+Q3 Why Docker?
+Docker gives:
+same environment everywhere 
+no dependency issues 
+
+Q4 Why Flask?
+Flask is:
+simple 
+lightweight 
+easy for demos 
+
+Q5 Why use HTML template?
+HTML provides:
+user interface 
+easier practical demo 
+
+🔥 Examiner Can Ask
+
+Difference between GET and POST?
+GET
+Used to fetch data
+POST
+Used to send data
+
+What is route in Flask?
+A route connects URL to function
+Example:
+@app.route('/')
+
+What is request.form?
+Used to receive form data
+
+✅ Output
+Open browser:
+http://localhost:5000
+You will see:
+✔ Registration form
+✔ Enter name/email
+✔ Success message
+
+✅ Experiment 1 Completed
+
+Say "next" and I will continue with:
+🚀 Experiment 2
+Version Control using Git and GitHub
+(simple commands + branch + merge + viva + every command explanation)
+next
+Great — let’s move to the next one exactly in the same simple + exam-friendly + deep explanation style.
+
+🚀 EXPERIMENT 2
+Version Control using Git & GitHub
+
+🎯 Objective
+You will learn:
+Initialize Git repository 
+Add and commit files 
+Connect to GitHub 
+Push code 
+Create branch 
+Merge branch 
+This experiment shows:
+✅ Version control
+✅ Collaboration
+✅ Code history tracking
+
+🧩 STEP 1 — Create Project Folder
+mkdir myproject
+cd myproject
+
+🔍 Explanation
+mkdir myproject
+Creates a folder 
+mkdir = make directory 
+
+cd myproject
+Moves inside folder 
+cd = change directory 
+
+🧩 STEP 2 — Create Simple File
+echo "Hello DevOps" > file.txt
+
+🔍 Explanation
+echo
+Prints text 
+>
+Redirects output to file 
+file.txt
+File is created 
+
+🧩 STEP 3 — Initialize Git
+git init
+
+🔍 Explanation
+git init
+Starts Git in your folder 
+Creates hidden .git directory 
+👉 This folder tracks:
+changes 
+commits 
+versions 
+
+🧩 STEP 4 — Check Status
+git status
+
+🔍 Explanation
+Shows:
+Untracked files 
+Modified files 
+Staged files 
+
+🧩 STEP 5 — Add File
+git add file.txt
+
+🔍 Explanation
+git add
+Moves file to staging area 
+👉 Think like:
+Working Area → Staging Area → Repository
+
+🧩 STEP 6 — Commit File
+git commit -m "First commit"
+
+🔍 Explanation
+git commit
+Saves version 
+-m
+Message 
+
+🧩 STEP 7 — Connect to GitHub
+git remote add origin https://github.com/your-username/myproject.git
+
+🔍 Explanation
+git remote
+Connects local → GitHub 
+origin
+Name of remote 
+
+🧩 STEP 8 — Push Code
+git push -u origin master
+
+🔍 Explanation
+git push
+Uploads code to GitHub 
+-u
+Sets default branch 
+master
+Branch name 
+
+🧩 STEP 9 — Create Branch
+git branch feature1
+
+🔍 Explanation
+git branch
+Creates new branch 
+👉 Branch = separate working copy
+
+🧩 STEP 10 — Switch Branch
+git checkout feature1
+
+🔍 Explanation
+git checkout
+Switches branch 
+
+🧩 STEP 11 — Modify File
+echo "New Feature Added" >> file.txt
+
+🔍 Explanation
+>>
+Appends content 
+
+🧩 STEP 12 — Add & Commit Again
+git add file.txt
+git commit -m "Added new feature"
+
+🧩 STEP 13 — Merge Branch
+git checkout master
+git merge feature1
+
+🔍 Explanation
+git merge
+Combines branches 
+
+🧩 STEP 14 — Push Updated Code
+git push
+
+🎯 COMPLETE FLOW
+Create → Add → Commit → Branch → Modify → Merge → Push
+
+🧠 IMPORTANT CONCEPTS (VERY IMPORTANT FOR VIVA)
+
+🔹 What is Git?
+Git is:
+👉 Version control system
+Tracks:
+file changes 
+history 
+versions 
+
+🔹 What is GitHub?
+GitHub is:
+👉 Cloud platform for Git
+Stores:
+repositories online 
+
+🔹 What is Repository?
+Repository = Project folder
+Contains:
+code 
+history 
+
+🔹 What is Commit?
+Commit = Save point
+
+🔹 What is Branch?
+Branch = Separate version
+Used for:
+new features 
+testing 
+
+🔹 What is Merge?
+Merge = Combine branches
+
+🎓 VIVA QUESTIONS
+
+🔥 Basic
+Q1 Difference between Git and GitHub?
+Git → local tool 
+GitHub → cloud platform 
+
+Q2 What is staging area?
+Temporary area before commit
+
+Q3 What is commit?
+Saving changes
+
+🔥 Intermediate
+Q4 Difference between git add and git commit?
+add → prepare 
+commit → save 
+
+Q5 What is branch?
+Separate working version
+
+Q6 Why branching?
+To avoid breaking main code
+
+🔥 Advanced
+Q7 What is merge conflict?
+When same line edited in two branches
+
+Q8 How to resolve conflict?
+Edit file manually → commit again
+
+Q9 What is HEAD?
+Pointer to current branch
+
+🔥 EXTRA QUESTIONS EXAMINER MAY ASK
+
+What is git clone?
+Copies repository
+git clone URL
+
+What is git pull?
+Fetch + merge
+
+What is git log?
+Shows commit history
+
+What is .gitignore?
+Ignores files
+Example:
+node_modules/
+*.log
+
+📌 REAL WORLD USE
+Team collaboration 
+Backup of code 
+Version tracking 
+Used in all companies 
+
+✅ Experiment 2 Completed
+
+Say "next" and I’ll continue with:
+🚀 Experiment 3
+Docker (Containerization full practical + simple explanation + commands + viva + deep concepts)
+next
+Good — now we move to one of the most important experiments (very frequently asked in viva):
+
+🚀 EXPERIMENT 3
+Docker – Containerization of Application
+
+🎯 Objective
+You will learn:
+What is Docker 
+Create a simple app 
+Write Dockerfile 
+Build Docker image 
+Run container 
+This experiment shows:
+✅ Application packaging
+✅ Same environment everywhere
+✅ Easy deployment
+
+🧩 STEP 1 — Create Simple Python App
+📄 app.py
+print("Hello from Docker Container")
+
+🔍 Explanation
+print()
+Displays output 
+👉 When container runs → this message appears
+
+🧩 STEP 2 — Create Dockerfile
+📄 Dockerfile
+FROM python:3.10
+
+WORKDIR /app
+
+COPY app.py .
+
+CMD ["python", "app.py"]
+
+🔍 Line-by-Line Explanation
+
+FROM python:3.10
+Base image 
+Contains Python installed 
+👉 Without this → Python won't run
+
+WORKDIR /app
+Creates working directory inside container 
+👉 All commands run inside /app
+
+COPY app.py .
+Copies file from computer → container 
+👉 . means current folder
+
+CMD ["python", "app.py"]
+Default command when container starts 
+
+🧩 STEP 3 — Build Docker Image
+docker build -t myapp .
+
+🔍 Explanation
+
+docker build
+Builds Docker image 
+
+-t myapp
+Tags image name = myapp 
+
+.
+Current directory 
+
+🧩 STEP 4 — Check Images
+docker images
+
+🔍 Explanation
+Shows all images:
+Image name 
+ID 
+Size 
+
+🧩 STEP 5 — Run Container
+docker run myapp
+
+🔍 Explanation
+docker run
+Starts container 
+👉 Output:
+Hello from Docker Container
+
+🧩 STEP 6 — Run Container with Name
+docker run --name test-container myapp
+
+🔍 Explanation
+--name
+Gives name to container 
+
+🧩 STEP 7 — Run in Background
+docker run -d myapp
+
+🔍 Explanation
+-d
+Detached mode (runs in background) 
+
+🧩 STEP 8 — Check Running Containers
+docker ps
+
+🔍 Explanation
+Shows:
+Running containers 
+
+🧩 STEP 9 — Stop Container
+docker stop test-container
+
+🔍 Explanation
+Stops container
+
+🧩 STEP 10 — Remove Container
+docker rm test-container
+
+🔍 Explanation
+Deletes container
+
+🧩 STEP 11 — Remove Image
+docker rmi myapp
+
+🔍 Explanation
+Deletes image
+
+🎯 COMPLETE FLOW
+Create App → Dockerfile → Build Image → Run Container
+
+🧠 IMPORTANT CONCEPTS (VERY IMPORTANT)
+
+🔹 What is Docker?
+Docker is:
+👉 Containerization tool
+
+🔹 What is Container?
+Container is:
+👉 Running instance of image
+
+🔹 What is Image?
+Image is:
+👉 Blueprint of container
+
+🔹 Difference: Image vs Container
+Image
+Container
+Static
+Running
+Template
+Execution
+
+
+🔹 What is Dockerfile?
+Text file with instructions
+
+🎓 VIVA QUESTIONS
+
+🔥 Basic
+Q1 What is Docker?
+Tool to create containers
+
+Q2 Why Docker?
+Same environment 
+No dependency issues 
+
+Q3 What is container?
+Running application
+
+🔥 Intermediate
+Q4 What is image?
+Template for container
+
+Q5 What is Dockerfile?
+Instructions to build image
+
+Q6 What is difference between VM and Docker?
+VM
+Docker
+Heavy
+Lightweight
+OS needed
+No full OS
+
+
+🔥 Advanced
+Q7 What is Docker Hub?
+Online repository of images
+
+Q8 What is port mapping?
+Connects container → system
+
+Q9 What is layered architecture?
+Docker builds images in layers
+
+🔥 EXTRA QUESTIONS EXAMINER MAY ASK
+
+What is docker pull?
+Download image
+docker pull ubuntu
+
+What is docker exec?
+Run command inside container
+
+What is docker logs?
+View container logs
+
+📌 REAL WORLD USE
+Deploy apps easily 
+Used in cloud 
+Used with Kubernetes 
+
+⚠️ COMMON MISTAKES (EXAM)
+Forgetting . in build 
+Wrong file name (Dockerfile must be exact) 
+Not installing dependencies 
+
+✅ Experiment 3 Completed
+
+Say "next" and I’ll continue with:
+🚀 Experiment 4
+Docker Compose (multi-container setup + simple code + full explanation + viva)
+Q4. Docker and Kubernetes Integration (15 Marks) Develop and deploy a containerized application using: Docker (build and run container) Kubernetes (create deployment and service) Demonstrate: Pod creation Scaling of application Q5. Application Testing using Selenium (15 Marks) Write a JavaScript-based application and perform automated testing using Selenium: Create test scripts Execute test cases Validate output Q6. Test Case Development for Containerized Application (15 Marks) For the Dockerized Flask application: Design and implement Selenium test cases Validate user registration functionality Identify and document defects Q7. End-to-End DevOps Workflow (15 Marks) Implement a complete DevOps workflow using: Git/GitHub (version control) Jenkins (CI) Docker (containerization) Demonstrate: Code commit → Build → Test → Run container Q8. Kubernetes Automation for Containerized Application (15 Marks) Automate running of a containerized application using Kubernetes: Create deployment configuration Run application in cluster Perform scaling and updates this ar ethe experiment name so do according 
+Got it — now we’ll follow exactly your exam questions (Q4–Q8) and do them one by one in the same format:
+✔ Simple code (no unnecessary complexity) 
+✔ Full fresh code for each experiment 
+✔ Step-by-step execution 
+✔ Line-by-line explanation 
+✔ Every command explained 
+✔ Viva + examiner questions 
+
+🚀 Q4. Docker + Kubernetes Integration (15 Marks)
+
+🎯 Objective
+You will:
+Build container using Docker 
+Deploy using Kubernetes 
+Create: 
+Pod (via Deployment) 
+Service 
+Perform: 
+Scaling 
+
+🧩 STEP 1 — Simple Flask App
+📄 app.py
+from flask import Flask
+
+app = Flask(__name__)
+
+@app.route('/')
+def home():
+    return "Hello from Kubernetes App"
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=5000)
+
+🔍 Explanation
+Creates simple web app 
+/ route returns message 
+Runs on port 5000 
+
+🧩 STEP 2 — Requirements File
+📄 requirements.txt
+Flask
+
+🧩 STEP 3 — Dockerfile
+📄 Dockerfile
+FROM python:3.10
+
+WORKDIR /app
+
+COPY . .
+
+RUN pip install -r requirements.txt
+
+CMD ["python", "app.py"]
+
+🧩 STEP 4 — Build Docker Image
+docker build -t k8s-app .
+
+🔍 Explanation
+docker build → creates image 
+-t k8s-app → image name 
+
+🧩 STEP 5 — Run Docker (optional test)
+docker run -p 5000:5000 k8s-app
+
+🧩 STEP 6 — Kubernetes Deployment
+📄 deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: flask-deployment
+
+spec:
+  replicas: 2
+
+  selector:
+    matchLabels:
+      app: flask-app
+
+  template:
+    metadata:
+      labels:
+        app: flask-app
+
+    spec:
+      containers:
+      - name: flask-container
+        image: k8s-app
+        ports:
+        - containerPort: 5000
+
+🔍 Line-by-Line Explanation
+
+apiVersion: apps/v1
+Defines API version
+
+kind: Deployment
+Creates Deployment (manages pods)
+
+replicas: 2
+Creates 2 pods
+👉 This shows scaling
+
+selector
+Links deployment to pods
+
+template
+Defines pod configuration
+
+containers
+Defines container inside pod
+
+image: k8s-app
+Uses Docker image
+
+🧩 STEP 7 — Service File
+📄 service.yaml
+apiVersion: v1
+kind: Service
+
+metadata:
+  name: flask-service
+
+spec:
+  type: NodePort
+
+  selector:
+    app: flask-app
+
+  ports:
+  - port: 5000
+    targetPort: 5000
+    nodePort: 30007
+
+🔍 Explanation
+
+type: NodePort
+Exposes app outside cluster
+
+port
+Service port
+
+targetPort
+Container port
+
+nodePort
+External port (browser access)
+
+🧩 STEP 8 — Apply Kubernetes Files
+kubectl apply -f deployment.yaml
+kubectl apply -f service.yaml
+
+🔍 Explanation
+kubectl apply
+Creates resources
+
+🧩 STEP 9 — Check Pods
+kubectl get pods
+
+🔍 Explanation
+Shows running pods
+
+🧩 STEP 10 — Check Services
+kubectl get services
+
+🧩 STEP 11 — Scaling
+kubectl scale deployment flask-deployment --replicas=4
+
+🔍 Explanation
+Increases pods to 4 
+Demonstrates scaling 
+
+🎯 Output
+Open browser:
+http://<node-ip>:30007
+
+🎓 Viva Questions
+
+Q1 What is Kubernetes?
+Container orchestration tool
+
+Q2 What is Pod?
+Smallest unit in Kubernetes
+
+Q3 What is Deployment?
+Manages pods
+
+Q4 What is Service?
+Exposes application
+
+Q5 What is scaling?
+Increasing number of pods
+
+
+✅ Q4 Completed
+
+Now say "next" and I’ll do:
+🚀 Q5 Selenium Testing (JavaScript App + Automation + Test Execution + Validation)
+Then after that we’ll do:
+Q6 (Selenium on Flask Docker app) 
+Q7 (Full DevOps workflow) 
+Q8 (Kubernetes automation deep) 
+next
+Alright — now we go to:
+
+🚀 Q5. Application Testing using Selenium (15 Marks)
+
+🎯 Objective
+You will:
+Create a simple JavaScript web app 
+Write Selenium test scripts 
+Execute tests 
+Validate output 
+
+🧩 STEP 1 — Simple JavaScript Web Application
+We’ll make a very simple login checker (easy for exam + easy to test).
+
+📄 index.html
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Login App</title>
+    <script>
+        function checkLogin() {
+            var username = document.getElementById("user").value;
+            var password = document.getElementById("pass").value;
+
+            if(username === "admin" && password === "123") {
+                document.getElementById("result").innerHTML = "Login Successful";
+            } else {
+                document.getElementById("result").innerHTML = "Login Failed";
+            }
+        }
+    </script>
+</head>
+
+<body>
+
+<h2>Login Form</h2>
+
+Username:<br>
+<input type="text" id="user"><br><br>
+
+Password:<br>
+<input type="password" id="pass"><br><br>
+
+<button onclick="checkLogin()">Login</button>
+
+<h3 id="result"></h3>
+
+</body>
+</html>
+
+🔍 Line-by-Line Explanation
+
+function checkLogin()
+JavaScript function 
+Runs when button is clicked 
+
+document.getElementById("user").value
+Gets value from input box 
+
+if(username === "admin" && password === "123")
+Checks correct login 
+
+innerHTML
+Updates text on webpage 
+
+🧩 STEP 2 — Install Selenium (Node.js)
+npm init -y
+npm install selenium-webdriver
+
+🔍 Explanation
+
+npm init -y
+Creates package.json 
+Initializes project 
+
+npm install selenium-webdriver
+Installs Selenium library 
+
+🧩 STEP 3 — Selenium Test Script
+📄 test.js
+const { Builder, By } = require('selenium-webdriver');
+
+async function testLogin() {
+
+    let driver = await new Builder().forBrowser('chrome').build();
+
+    await driver.get("file:///C:/path-to-your/index.html");
+
+    // Enter username
+    await driver.findElement(By.id("user")).sendKeys("admin");
+
+    // Enter password
+    await driver.findElement(By.id("pass")).sendKeys("123");
+
+    // Click login button
+    await driver.findElement(By.tagName("button")).click();
+
+    // Get result text
+    let result = await driver.findElement(By.id("result")).getText();
+
+    console.log("Result:", result);
+
+    if(result === "Login Successful") {
+        console.log("Test Passed");
+    } else {
+        console.log("Test Failed");
+    }
+
+    await driver.quit();
+}
+
+testLogin();
+
+🔍 Line-by-Line Explanation
+
+require('selenium-webdriver')
+Imports Selenium
+
+Builder
+Creates browser instance
+
+By
+Used to locate elements
+
+new Builder().forBrowser('chrome').build()
+Opens Chrome browser 
+
+driver.get()
+Opens webpage 
+
+findElement(By.id("user"))
+Finds input field 
+
+sendKeys("admin")
+Types text 
+
+click()
+Clicks button 
+
+getText()
+Gets output text 
+
+driver.quit()
+Closes browser 
+
+🧩 STEP 4 — Run Test
+node test.js
+
+🎯 Output
+Result: Login Successful
+Test Passed
+
+🧠 IMPORTANT CONCEPTS
+
+🔹 What is Selenium?
+Automation tool for testing web apps
+
+🔹 What is Automation Testing?
+Testing done by code (not manually)
+
+🔹 Why Selenium?
+Fast 
+Repeatable 
+No human error 
+
+🔹 What is WebDriver?
+Controls browser
+
+🎓 VIVA QUESTIONS
+
+🔥 Basic
+Q1 What is Selenium?
+Tool for web automation testing
+
+Q2 What is WebDriver?
+Controls browser actions
+
+Q3 What is automation testing?
+Testing using scripts
+
+🔥 Intermediate
+Q4 Difference between manual and automation testing?
+Manual
+Automation
+Slow
+Fast
+Human
+Script
+
+
+Q5 What is By.id()?
+Finds element by ID
+
+Q6 What is sendKeys()?
+Inputs text
+
+🔥 Advanced
+Q7 What browsers Selenium supports?
+Chrome 
+Firefox 
+Edge 
+
+Q8 What is headless testing?
+Runs without UI
+
+Q9 What is test case?
+Step-by-step test scenario
+
+🔥 EXTRA QUESTIONS EXAMINER MAY ASK
+
+What is XPath?
+Used to locate elements
+
+What is CSS selector?
+Another way to find elements
+
+What is assertion?
+Checking expected result
+
+📌 REAL WORLD USE
+Testing login systems 
+Testing websites 
+Used in CI pipelines 
+
+⚠️ COMMON EXAM MISTAKES
+Wrong file path in driver.get() 
+Element ID mismatch 
+Forgetting await 
+
+✅ Q5 Completed
+
+Say "next" and I’ll continue with:
+🚀 Q6
+Selenium Testing on Dockerized Flask App (VERY IMPORTANT + Real exam favorite)
+next
+Perfect — this is a very important and high-scoring experiment because it combines Docker + Flask + Selenium testing.
+
+🚀 Q6. Test Case Development for Containerized Application (15 Marks)
+
+🎯 Objective
+For a Dockerized Flask app, you will:
+Write Selenium test cases 
+Validate user registration 
+Identify defects 
+
+🧩 STEP 1 — Simple Flask Registration App
+(Keep it simple for exam)
+
+📄 app.py
+from flask import Flask, request, render_template
+
+app = Flask(__name__)
+
+users = []
+
+@app.route('/')
+def home():
+    return render_template('index.html')
+
+@app.route('/register', methods=['POST'])
+def register():
+    name = request.form['name']
+    email = request.form['email']
+
+    if name == "" or email == "":
+        return "<h3>Error: All fields required</h3>"
+
+    users.append([name, email])
+
+    return "<h3>Registration Successful</h3>"
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=5000)
+
+🔍 Key Logic
+Takes name & email 
+Checks empty fields 
+Shows success/error 
+
+🧩 STEP 2 — HTML Form
+📄 templates/index.html
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Register</title>
+</head>
+<body>
+
+<h2>Registration Form</h2>
+
+<form action="/register" method="post">
+    Name:<br>
+    <input type="text" name="name" id="name"><br><br>
+
+    Email:<br>
+    <input type="text" name="email" id="email"><br><br>
+
+    <input type="submit" value="Register">
+</form>
+
+</body>
+</html>
+
+🧩 STEP 3 — Dockerfile
+📄 Dockerfile
+FROM python:3.10
+
+WORKDIR /app
+
+COPY . .
+
+RUN pip install flask
+
+CMD ["python", "app.py"]
+
+🧩 STEP 4 — Build & Run Docker
+docker build -t flask-test-app .
+docker run -p 5000:5000 flask-test-app
+
+🎯 Now App runs at:
+http://localhost:5000
+
+🧩 STEP 5 — Selenium Test Script
+📄 test.js
+const { Builder, By } = require('selenium-webdriver');
+
+async function testRegistration() {
+
+    let driver = await new Builder().forBrowser('chrome').build();
+
+    await driver.get("http://localhost:5000");
+
+    // Enter name
+    await driver.findElement(By.id("name")).sendKeys("Sarthak");
+
+    // Enter email
+    await driver.findElement(By.id("email")).sendKeys("test@test.com");
+
+    // Click submit
+    await driver.findElement(By.css("input[type='submit']")).click();
+
+    // Get result
+    let pageSource = await driver.getPageSource();
+
+    if(pageSource.includes("Registration Successful")) {
+        console.log("Test Passed");
+    } else {
+        console.log("Test Failed");
+    }
+
+    await driver.quit();
+}
+
+testRegistration();
+
+🔍 Line-by-Line Explanation
+
+driver.get("http://localhost:5000")
+Opens Flask app 
+
+findElement(By.id("name"))
+Finds name input field 
+
+sendKeys("Sarthak")
+Types name 
+
+By.css(...)
+Finds submit button 
+
+getPageSource()
+Gets full HTML page 
+
+includes("Registration Successful")
+Checks output 
+
+driver.quit()
+Closes browser 
+
+🧪 TEST CASES (VERY IMPORTANT FOR EXAM)
+
+✅ Test Case 1 — Valid Input
+Input
+Expected
+Name: Sarthak
+Success
+Email: test@test.com
+
+
+
+✔ Output: Registration Successful
+
+❌ Test Case 2 — Empty Name
+Input
+Expected
+Name: ""
+Error
+Email: test@test.com
+
+
+
+✔ Output: Error message
+
+❌ Test Case 3 — Empty Email
+Input
+Expected
+Name: Sarthak
+Error
+Email: ""
+
+
+
+
+❌ Test Case 4 — Both Empty
+✔ Output: Error
+
+🐞 DEFECT IDENTIFICATION
+
+Possible Bugs
+
+❌ No Email Format Validation
+Accepts invalid emails like: 
+abc
+
+❌ No Duplicate Check
+Same user can register multiple times 
+
+❌ No Data Storage
+Data lost after restart 
+
+❌ No Security
+No password / authentication 
+
+🧠 IMPORTANT CONCEPTS
+
+🔹 What is Test Case?
+Step-by-step testing scenario
+
+🔹 What is Validation?
+Checking expected vs actual output
+
+🔹 What is Defect?
+Error or bug in system
+
+🔹 What is Automation Testing?
+Testing using scripts
+
+🎓 VIVA QUESTIONS
+
+🔥 Basic
+Q1 What is test case?
+Scenario to test functionality
+
+Q2 What is defect?
+Bug in application
+
+Q3 What is validation?
+Checking correctness
+
+🔥 Intermediate
+Q4 Why Selenium used here?
+To automate testing
+
+Q5 Why Docker used?
+To run app in container
+
+Q6 What is getPageSource()?
+Gets full HTML
+
+🔥 Advanced
+Q7 Difference between functional & automation testing?
+Functional
+Automation
+What to test
+How to test
+
+
+Q8 What is regression testing?
+Testing after changes
+
+Q9 How to improve this app?
+Add DB 
+Add validation 
+Add login 
+
+📌 REAL WORLD USE
+Testing web apps automatically 
+CI/CD pipelines 
+Quality assurance 
+
+⚠️ COMMON EXAM MISTAKES
+Wrong element ID 
+Server not running 
+Port mismatch 
+
+✅ Q6 Completed
+
+Say "next" and I’ll continue with:
+🚀 Q7
+End-to-End DevOps Workflow (Git + Jenkins + Docker full pipeline — MOST IMPORTANT)
+next
+Good — this one is the most important overall experiment because it connects everything you’ve learned.
+
+🚀 Q7. End-to-End DevOps Workflow (15 Marks)
+
+🎯 Objective
+Implement complete workflow:
+Git / GitHub → Version Control 
+Jenkins → Continuous Integration 
+Docker → Containerization 
+
+🎯 What You Must Demonstrate
+✔ Code Commit
+✔ Build
+✔ Test
+✔ Run Container
+
+🧩 STEP 1 — Simple Flask App
+📄 app.py
+from flask import Flask
+
+app = Flask(__name__)
+
+@app.route('/')
+def home():
+    return "DevOps Pipeline Running Successfully"
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=5000)
+
+🔍 Explanation
+Simple web app 
+Displays success message 
+Used for pipeline demo 
+
+🧩 STEP 2 — Requirements File
+📄 requirements.txt
+Flask
+
+🧩 STEP 3 — Dockerfile
+📄 Dockerfile
+FROM python:3.10
+
+WORKDIR /app
+
+COPY . .
+
+RUN pip install -r requirements.txt
+
+CMD ["python", "app.py"]
+
+🧩 STEP 4 — Initialize Git
+git init
+git add .
+git commit -m "Initial commit"
+
+🔍 Explanation
+git init → start repository 
+git add . → add all files 
+git commit → save version 
+
+🧩 STEP 5 — Push to GitHub
+git remote add origin https://github.com/your-username/devops-app.git
+git push -u origin master
+
+🧩 STEP 6 — Jenkins Pipeline
+📄 Jenkinsfile
+pipeline {
+    agent any
+
+    stages {
+
+        stage('Clone Code') {
+            steps {
+                git 'https://github.com/your-username/devops-app.git'
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                sh 'docker build -t devops-app .'
+            }
+        }
+
+        stage('Test') {
+            steps {
+                sh 'echo "Running simple test..."'
+            }
+        }
+
+        stage('Run Container') {
+            steps {
+                sh 'docker run -d -p 5000:5000 devops-app'
+            }
+        }
+    }
+}
+
+🔍 Line-by-Line Explanation
+
+pipeline {
+Defines pipeline
+
+agent any
+Runs on any Jenkins node
+
+stage('Clone Code')
+Pulls code from GitHub
+
+git
+Downloads repository
+
+stage('Build Docker Image')
+Builds container
+
+sh
+Runs shell command
+
+stage('Test')
+Runs test step
+
+stage('Run Container')
+Deploys app
+
+🧩 STEP 7 — Run Jenkins Job
+Steps in Jenkins UI:
+Create new pipeline job 
+Add GitHub repo 
+Add Jenkinsfile 
+Click Build Now 
+
+🎯 OUTPUT FLOW
+Code Push → Jenkins Trigger → Build → Test → Run Container
+
+🧠 IMPORTANT CONCEPTS
+
+🔹 What is DevOps?
+Combination of:
+Development 
+Operations 
+
+🔹 What is CI/CD?
+CI (Continuous Integration)
+Auto build on code change
+CD (Continuous Deployment)
+Auto deploy app
+
+🔹 Why this pipeline?
+Automation 
+Faster development 
+Less manual work 
+
+🎓 VIVA QUESTIONS
+
+🔥 Basic
+Q1 What is DevOps?
+Combines development + operations
+
+Q2 What is CI?
+Automatic build
+
+Q3 What is CD?
+Automatic deployment
+
+🔥 Intermediate
+Q4 Why Jenkins?
+Automates pipeline
+
+Q5 Why Docker?
+Consistent environment
+
+Q6 What is pipeline?
+Steps executed automatically
+
+🔥 Advanced
+Q7 What triggers Jenkins?
+Git push 
+Manual build 
+
+Q8 What is build stage?
+Creating application or image
+
+Q9 What is deployment?
+Running application
+
+🔥 EXTRA QUESTIONS EXAMINER MAY ASK
+
+What is rollback?
+Reverting to previous version
+
+What is automation?
+Reducing manual work
+
+What are alternatives to Jenkins?
+GitHub Actions 
+GitLab CI 
+
+📌 REAL WORLD USE
+Used in companies 
+Automates software delivery 
+Reduces errors 
+
+⚠️ COMMON EXAM MISTAKES
+Wrong Git URL 
+Docker not installed in Jenkins 
+Port already in use 
+
+✅ Q7 Completed
+
+Say "next" and I’ll finish with:
+🚀 Q8
+Kubernetes Automation (Deployment + Scaling + Updates + Full Explanation — FINAL & IMPORTANT)
+next
+Great — final one. This is very scoring if you explain clearly, because it shows you understand automation + scaling + updates in Kubernetes.
+
+🚀 Q8. Kubernetes Automation for Containerized Application (15 Marks)
+
+🎯 Objective
+You will:
+Create Kubernetes deployment 
+Run application in cluster 
+Perform: 
+Scaling 
+Updates (automation) 
+
+🎯 What You Must Demonstrate
+✔ Deployment creation
+✔ Pod running
+✔ Scaling
+✔ Updating application
+
+🧩 STEP 1 — Simple Flask App
+📄 app.py
+from flask import Flask
+
+app = Flask(__name__)
+
+@app.route('/')
+def home():
+    return "Version 1 - Kubernetes App"
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=5000)
+
+🧩 STEP 2 — Dockerfile
+📄 Dockerfile
+FROM python:3.10
+
+WORKDIR /app
+
+COPY . .
+
+RUN pip install flask
+
+CMD ["python", "app.py"]
+
+🧩 STEP 3 — Build Docker Image
+docker build -t k8s-auto-app:v1 .
+
+🔍 Explanation
+k8s-auto-app:v1 → version tag
+👉 Used later for updates 
+
+🧩 STEP 4 — Kubernetes Deployment File
+📄 deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: auto-deployment
+
+spec:
+  replicas: 2
+
+  selector:
+    matchLabels:
+      app: auto-app
+
+  template:
+    metadata:
+      labels:
+        app: auto-app
+
+    spec:
+      containers:
+      - name: auto-container
+        image: k8s-auto-app:v1
+        ports:
+        - containerPort: 5000
+
+🔍 Important Points
+replicas: 2 → 2 pods created 
+Uses image v1 
+
+🧩 STEP 5 — Service File
+📄 service.yaml
+apiVersion: v1
+kind: Service
+
+metadata:
+  name: auto-service
+
+spec:
+  type: NodePort
+
+  selector:
+    app: auto-app
+
+  ports:
+  - port: 5000
+    targetPort: 5000
+    nodePort: 30008
+
+🧩 STEP 6 — Apply Configuration
+kubectl apply -f deployment.yaml
+kubectl apply -f service.yaml
+
+🧩 STEP 7 — Check Running Pods
+kubectl get pods
+
+🧩 STEP 8 — Access Application
+http://<node-ip>:30008
+
+🧩 STEP 9 — Scaling (AUTOMATION)
+kubectl scale deployment auto-deployment --replicas=4
+
+🔍 Explanation
+Increases pods from 2 → 4 
+Done automatically 
+
+🧩 STEP 10 — Update Application (IMPORTANT)
+
+Change Code
+return "Version 2 - Updated App"
+
+Rebuild Image
+docker build -t k8s-auto-app:v2 .
+
+Update Deployment
+kubectl set image deployment/auto-deployment auto-container=k8s-auto-app:v2
+
+🔍 Explanation
+Updates running app 
+No downtime 
+Automatic rollout 
+
+🧩 STEP 11 — Check Rollout Status
+kubectl rollout status deployment auto-deployment
+
+🧩 STEP 12 — Rollback (VERY IMPORTANT)
+kubectl rollout undo deployment auto-deployment
+
+🔍 Explanation
+Reverts to previous version 
+
+🎯 COMPLETE FLOW
+Build Image → Deploy → Scale → Update → Rollback
+
+🧠 IMPORTANT CONCEPTS
+
+🔹 What is Kubernetes Automation?
+Automatic:
+deployment 
+scaling 
+updating 
+
+🔹 What is Rolling Update?
+Updates app without stopping it
+
+🔹 What is Rollback?
+Revert to old version
+
+🔹 What is Replica?
+Number of pods
+
+🎓 VIVA QUESTIONS
+
+🔥 Basic
+Q1 What is Deployment?
+Manages pods
+
+Q2 What is scaling?
+Increasing pods
+
+Q3 What is service?
+Exposes app
+
+🔥 Intermediate
+Q4 What is rolling update?
+Update without downtime
+
+Q5 What is rollback?
+Undo update
+
+Q6 What is replica?
+Number of pod copies
+
+🔥 Advanced
+Q7 Difference between Deployment and Pod?
+Pod
+Deployment
+Single
+Manages many
+
+
+Q8 What is NodePort?
+Exposes app externally
+
+Q9 What happens if pod fails?
+Kubernetes recreates it automatically
+
+🔥 EXTRA QUESTIONS EXAMINER MAY ASK
+
+What is cluster?
+Group of nodes
+
+What is node?
+Machine running pods
+
+What is container orchestration?
+Managing containers automatically
+
+📌 REAL WORLD USE
+Used in cloud (AWS, Azure, GCP) 
+Handles scaling automatically 
+Used in large applications 
+
+⚠️ COMMON EXAM MISTAKES
+Image not updated properly 
+Wrong container name 
+Forgetting kubectl apply 
+
+✅ Q8 Completed (FINAL)
+
