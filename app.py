@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for, flash
 
 app = Flask(__name__)
-app.secret_key = 'supersecretkey'
+app.secret_key = 'secretkey'
 
 registrations = []
 
@@ -23,7 +23,7 @@ def index():
 
 @app.route('/health')
 def health():
-    return {'status': 'ok'}, 200
+    return {'status': ' good ok'}, 200
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=7001, debug=True)
