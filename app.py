@@ -16,7 +16,7 @@ def index():
             flash('All fields are required.', 'error')
         else:
             registrations.append({'name': name, 'email': email, 'event': event})
-            flash(f'Successfully registered {name} for {event}!', 'success')
+            flash(f'Successfully registered the account {name} for {event}!', 'success')
             return redirect(url_for('index'))
 
     return render_template('index.html', registrations=registrations)
