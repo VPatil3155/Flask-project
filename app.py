@@ -23,7 +23,7 @@ def index():
 
 @app.route('/health')
 def health():
-    return {'status': ' good ok'}, 200
+    return {'status': ' good ok all is good'}, 200
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=7001, debug=True)
